@@ -1,30 +1,8 @@
 import mongoose, { Schema } from "mongoose";
+import {Status} from "../../Domain/enitites/Task.js"
+import type {Task} from "../../Domain/enitites/Task.js"
 
-enum Status{
-    Done = "Done",
-    InProgress = "InProgress",
-    Halted = "Halted",
-    NotStarted = "NotStarted"
-}
-
-interface TaskMember {
-    userId: mongoose.Types.ObjectId;
-    role: string;
-}
-
-interface TaskSchema {
-    title: string;
-    priority: string;
-    status: Status;
-    projectId: mongoose.Types.ObjectId;
-    orgId: mongoose.Types.ObjectId;
-    createdBy: mongoose.Types.ObjectId;
-    taskMem: TaskMember[];
-    due: Date;
-    createdAt: Date;
-}
-
-const taskSchema = new Schema<TaskSchema>(
+const taskSchema = new Schema<Task>(
     {
         title: {
             type: String,
@@ -86,4 +64,4 @@ const taskSchema = new Schema<TaskSchema>(
     },
 );
 
-export const Task = mongoose.model<TaskSchema>("Task", taskSchema);
+export const TaskModel = mongoose.model<Task>("Task", taskSchema);

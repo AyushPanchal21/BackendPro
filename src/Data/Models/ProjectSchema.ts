@@ -1,19 +1,8 @@
 import mongoose, { Schema } from 'mongoose'
+import type {Project} from "../../Domain/enitites/Project.js"
+import { Status } from '../../Domain/enitites/Project.js'
 
-interface ProjectMembers {
-    userId: mongoose.Types.ObjectId,
-}
-
-interface ProjectSchema {
-    ProName: string,
-    description: string,
-    allMem: ProjectMembers[],
-    createdAt: Date,
-    status: string
-    orgId: mongoose.Types.ObjectId,
-}
-
-const projectSchema = new Schema<ProjectSchema>({
+const projectSchema = new Schema<Project>({
     ProName: {
         type: String,
         required: true,
@@ -23,17 +12,18 @@ const projectSchema = new Schema<ProjectSchema>({
     },
     status: {
         type: String,
+        enum : Object.values(Status),
         required: true,
     },
     orgId: {
-        type: mongoose.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: "Organization",
         required: true,
     },
     allMem: [
         {
             userId: {
-                type: mongoose.Types.ObjectId,
+                type: Schema.Types.ObjectId,
                 ref: "User"
             }
         }
@@ -44,4 +34,4 @@ const projectSchema = new Schema<ProjectSchema>({
     },
 })
 
-export const Project = mongoose.model<ProjectSchema>("Project", projectSchema)
+export const ProjectModel = mongoose.model<Project>("Project", projectSchema)

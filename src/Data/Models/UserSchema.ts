@@ -1,12 +1,7 @@
 import mongoose,{Schema} from 'mongoose'
-interface UserSchema {
-    name: string,
-    email : string,
-    password : string,
-    createdAt : Date,
-}
+import type { User } from '../../Domain/enitites/User.js'
 
-const userSchema = new Schema<UserSchema>({
+const userSchema = new Schema<User>({
     name:{
         type:String,
         required : true,
@@ -26,4 +21,4 @@ const userSchema = new Schema<UserSchema>({
     },
 })
 
- export const User = mongoose.model<UserSchema>("User",userSchema)
+ export const UserModel = mongoose.model<User>("User",userSchema)
