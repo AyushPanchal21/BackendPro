@@ -10,10 +10,10 @@ export interface ProjectMembers {
 }
 
 export interface Project {
-    ProName: string,
-    description: string,
+    orgId: String,
+    proName: String,
+    description: String,
     allMem: ProjectMembers[],
     createdAt: Date,
-    status: string
-    orgId: String,
+    status: String
 }

@@ -11,10 +11,12 @@ export interface ProjectList {
     projectId: String
 }
 export interface Organization {
-    owner: String,
-    OrgName: string,
-    Project: ProjectList[],
+    id:String,
+    password:string,
+    email:string,
+    orgName: string,
+    project: ProjectList[],
     allMem: OrganizationMembers[],
     createdAt: Date,
-    status: Status
+    orgstatus: Status
 }
