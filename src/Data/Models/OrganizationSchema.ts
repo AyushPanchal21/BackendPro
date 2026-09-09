@@ -1,18 +1,19 @@
 import mongoose, { Schema } from 'mongoose'
-import type {Organization} from '../../Domain/enitites/Organization.js'
+import type { Organization } from '../../Domain/enitites/Organization.js'
 import { Status } from '../../Domain/enitites/Organization.js'
 
 const organizationSchema = new Schema<Organization>({
-    owner: {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-        required: true
+    password: {
+        type: String,
     },
-    OrgName: {
+    email: {
+        type: String,
+    },
+    orgName: {
         type: String,
         required: true,
     },
-    Project: [
+    project: [
         {
             projectId: {
                 type: Schema.Types.ObjectId,
@@ -20,11 +21,6 @@ const organizationSchema = new Schema<Organization>({
             }
         }
     ],
-    status: {
-        type: String,
-        enum : Object.values(Status),
-        required: true,
-    },
     allMem: [
         {
             userId: {
@@ -33,10 +29,11 @@ const organizationSchema = new Schema<Organization>({
             }
         }
     ],
-    createdAt: {
-        type: Date,
-        default: Date.now
-    },
+    orgstatus:{
+        type : String,
+        enum:Object.values(Status),
+        default:Status.NotSuspended
+    }
 })
 
 export const OrganizationModel = mongoose.model<Organization>("Organization", organizationSchema)

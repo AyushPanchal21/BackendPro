@@ -15,6 +15,10 @@ const userSchema = new Schema<User>({
         required : true,
         unique:true,
     },
+    orgOwner:{
+        type:Boolean,
+        default:false,
+    },
     createdAt:{
         type:Date,
         default:Date.now
