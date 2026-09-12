@@ -1,15 +1,15 @@
 import type { OrganizationRepository } from "../repository/organizationRepository.js";
 import bcrypt from "bcrypt"
 import { MongoOrgRepo } from "../../Data/repository/MongoOrgRepo.js";
-import { Status } from "../enitites/Organization.js";
+import { Status, type InputFieldsForOrganization } from "../enitites/Organization.js";
 
 export class CreateOrg {
     private orgRepository: OrganizationRepository;
     constructor(orgRepository: OrganizationRepository) {
         this.orgRepository = orgRepository;
     }
-    async execute(name:string,email: string, password: string) {
-        const user = await this.orgRepository.findByEmail(email)
+    async execute(org:InputFieldsForOrganization) {
+        const user = await this.orgRepository.findByEmail(org.email)
         if (user) {
             return {
                 status: false,
@@ -18,11 +18,11 @@ export class CreateOrg {
         }
         else {
             const salt = bcrypt.genSaltSync(10);
-            const hash = bcrypt.hashSync(password, salt);
+            const hash = bcrypt.hashSync(org.password, salt);
             const newUser = await this.orgRepository.createOrg({
                 password: hash,
-                email,
-                orgName:"panda and sons",
+                email : org.email,
+                orgName:org.orgName,
                 project:[],
                 allMem:[],
                 createdAt: new Date(),
