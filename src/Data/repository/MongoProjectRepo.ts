@@ -3,8 +3,10 @@ import type { ProjectRepository } from "../../Domain/repository/projectRepositor
 import type { Project } from "../../Domain/enitites/Project.js";
 
 export class MongoProjectRepo implements ProjectRepository{
-    async findProjectId(id: string) {
-        return ProjectModel.findOne({id})
+    async findProject(orgid: String,proname:String) {
+        return ProjectModel.findOne({
+            orgid,proname
+        })
     }
     async createProject(project:Project): Promise<Project> {
             const newProject = new ProjectModel(project)
