@@ -1,15 +1,17 @@
 import type { UserRepository } from "../repository/userRepository.js";
 import bcrypt from "bcrypt"
 import { MongoUserRepo } from "../../Data/repository/MongoUserRepo.js";
+import type { InputUserField } from "../enitites/User.js";
+import { Role } from "../enitites/User.js";
 
 export class CreateUser {
     private userRepository: UserRepository;
     constructor(userRepository: UserRepository) {
         this.userRepository = userRepository;
     }
-    async execute(name:string,email: string, password: string) {
-        const user = await this.userRepository.findByEmail(email)
-        if (user) {
+    async execute(user:InputUserField) {
+        const usercheck = await this.userRepository.findByEmail(user.email)
+        if (usercheck) {
             return {
                 status: false,
                 message: "user exists!",
@@ -17,11 +19,12 @@ export class CreateUser {
         }
         else {
             const salt = bcrypt.genSaltSync(10);
-            const hash = bcrypt.hashSync(password, salt);
+            const hash = bcrypt.hashSync(user.password, salt);
             const newUser = await this.userRepository.createUser({
-                name,
-                email,
+                name:user.name,
+                email:user.email,
                 password: hash,
+                role:Role.Candidate,
                 createdAt: new Date()
             })
             return {
