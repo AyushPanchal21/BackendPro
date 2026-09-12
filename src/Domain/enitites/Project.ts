@@ -1,4 +1,4 @@
-export enum Status{
+export enum Status {
     Done = "Done",
     InProgress = "InProgress",
     Halted = "Halted",
@@ -15,5 +15,12 @@ export interface Project {
     description: String,
     allMem: ProjectMembers[],
     createdAt: Date,
-    status: String
+    status: Status
+}
+
+export interface InputProjectFields {
+    orgId: String,
+    proName: String,
+    description: String,
+    allMem: [],
 }
