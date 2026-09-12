@@ -11,7 +11,6 @@ export interface ProjectList {
     projectId: String
 }
 export interface Organization {
-    id:String,
     password:string,
     email:string,
     orgName: string,
@@ -19,4 +18,10 @@ export interface Organization {
     allMem: OrganizationMembers[],
     createdAt: Date,
     orgstatus: Status
+}
+
+export interface InputFieldsForOrganization{
+    email: string;
+    password: string;
+    orgName: string;
 }
