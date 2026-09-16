@@ -6,6 +6,9 @@ import { createUser } from "./src/Domain/usecase/CreateUser.js";
 import { loginUser } from "./src/Domain/usecase/LoginUser.js";
 import { loginOrg } from "./src/Domain/usecase/LoginOrg.js";
 import { createorg } from "./src/Domain/usecase/CreateOrg.js"
+import { createproject } from "./src/Domain/usecase/CreateProject.js";
+import { createapplication } from "./src/Domain/usecase/CreateApplication.js";
+import { checkApplication } from "./src/Domain/usecase/GetApplication.js";
 import Jwt from "jsonwebtoken";
 
 dotenv.config();
@@ -20,12 +23,11 @@ DBConnect();
 app.post("/create-user", async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body
-    const result = await createUser.execute(
+    const result = await createUser.execute({
       name,
       email,
       password
-    )
-    console.log(result)
+    })
     if (!result.status) {
       return res.status(409).json(result);
     }
@@ -38,21 +40,22 @@ app.post("/create-user", async (req: Request, res: Response) => {
 
 app.post("/login-user", async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body
+    const { email, password, id } = req.body
     const result = await loginUser.execute(
       email,
       password
     )
+    console.log(result)
     if (!result.status || !result.user) {
       return res.status(401).json(result);
     }
     const jwttoken = Jwt.sign(
       {
-        orgId: result.user.id,
+        orgId: id,
       },
       key
     )
-    return res.status(201).json({ message: "logged in",orgtoken:jwttoken });
+    return res.status(201).json({ message: "logged in", usertoken: jwttoken });
   } catch (err) {
     console.log(err)
   }
@@ -60,13 +63,13 @@ app.post("/login-user", async (req: Request, res: Response) => {
 
 app.post("/create-org", async (req: Request, res: Response) => {
   try {
-    const { name, email, password } = req.body;
+    const { email, password, orgName } = req.body;
 
-    const orgResult = await createorg.execute(
-      name,
+    const orgResult = await createorg.execute({
       email,
-      password
-    );
+      password,
+      orgName,
+    });
 
     if (!orgResult.status) {
       return res.status(409).json(orgResult);
@@ -85,7 +88,7 @@ app.post("/create-org", async (req: Request, res: Response) => {
 
 app.post("/login-organization", async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body
+    const { email, password, id } = req.body
     const result = await loginOrg.execute(
       email,
       password
@@ -96,17 +99,68 @@ app.post("/login-organization", async (req: Request, res: Response) => {
 
     const jwttoken = Jwt.sign(
       {
-        orgId: result.user.id,
+        orgId: id,
       },
       key
     )
-    return res.status(201).json({ message: "logged in",orgtoken:jwttoken });
+    return res.status(201).json({ message: "logged in", orgtoken: jwttoken });
   } catch (err) {
     console.log(err)
   }
 })
 
+app.post("/organizatoin/apply", async (req: Request, res: Response) => {
+
+  const { orgid, userid, role, experience } = req.body
+
+  const check = await checkApplication.execute({
+    userid,
+    orgid
+  })
+  if (check.status == false) {
+    return res.status(400).json({
+      status: false,
+      message: "User has already applied"
+    })
+  }
+  else {
+    const result = await createapplication.execute({
+      orgid,
+      userid,
+      role,
+      experience
+    })
+    return res.status(201).json(result);
+  }
+})
+
+app.post("/create-project", async (req: Request, res: Response) => {
+  try {
+    const { orgid, proName, description, allMem = [] } = req.body;
+
+    const projectResult = await createproject.execute({
+      orgId: orgid,
+      proName: proName,
+      description: description,
+      allMem: allMem,
+    });
+
+    if (!projectResult.status) {
+      return res.status(409).json(projectResult);
+    }
+
+    return res.status(201).json(projectResult);
+
+  } catch (err) {
+    console.log(err);
+
+    return res.status(500).json({
+      message: "Internal server error"
+    });
+  }
+});
+
 
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}`) 
+  console.log(`Example app listening on port ${PORT}`)
 })
