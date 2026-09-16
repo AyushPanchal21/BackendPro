@@ -11,4 +11,9 @@ export class MongoAppRepo implements ApplicationRepository {
     async checkApplication(userid: string,orgid:string) {
         return await ApplicationModel.findOne({ userid ,orgid})
     }
+
+    async getApplication(orgid:string) {
+        return await ApplicationModel.find({orgid})
+    }
+
 }
