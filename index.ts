@@ -8,7 +8,8 @@ import { loginOrg } from "./src/Domain/usecase/LoginOrg.js";
 import { createorg } from "./src/Domain/usecase/CreateOrg.js"
 import { createproject } from "./src/Domain/usecase/CreateProject.js";
 import { createapplication } from "./src/Domain/usecase/CreateApplication.js";
-import { checkApplication } from "./src/Domain/usecase/GetApplication.js";
+import { checkApplication } from "./src/Domain/usecase/CheckApplication.js";
+import {getapplication} from "./src/Domain/usecase/GetApplicationForOrganization.js"
 import Jwt from "jsonwebtoken";
 
 dotenv.config();
@@ -132,6 +133,16 @@ app.post("/organizatoin/apply", async (req: Request, res: Response) => {
     })
     return res.status(201).json(result);
   }
+})
+
+app.post("/organization/get-applications",async(req:Request,res:Response)=>{
+  const {orgid} = req.body;
+  const result = await getapplication.execute({
+    orgid
+  })
+  return res.status(201).json({
+    results:result
+  })
 })
 
 app.post("/create-project", async (req: Request, res: Response) => {
