@@ -22,3 +22,7 @@ export interface ApplicationQuery {
     userid: string
     orgid: string
 }
+
+export interface OrgApplicationQuery {
+    orgid: string
+}
