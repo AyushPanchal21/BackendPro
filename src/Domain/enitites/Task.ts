@@ -5,14 +5,22 @@ export enum Status{
     NotStarted = "NotStarted"
 }
 
+export enum Priority{
+    High = "High",
+    Highest = "Highest",
+    Low = "Low",
+    Lowest = "Lowest",
+    Medium = "Medium",
+}
+
 export interface TaskMember {
     userId: String;
     role: string;
 }
 
 export interface Task {
-    title: string;
-    priority: string;
+    title: String;
+    priority:Priority;
     status: Status;
     projectId: String;
     orgId: String;
@@ -20,4 +28,16 @@ export interface Task {
     taskMem: TaskMember[];
     due: Date;
     createdAt: Date;
+}
+
+export interface TaskInputFields{
+    title:String,
+    projectId:String,
+    orgId:String,
+    due:Date,
+};
+
+export interface TaskQuery{
+    title : String,
+    projectId  :String
 }
