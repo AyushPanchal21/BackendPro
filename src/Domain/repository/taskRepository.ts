@@ -1,4 +1,5 @@
 import type {Task} from "../enitites/Task.js"
 export interface TaskRepository{
-    findById(id:string):Promise<Task | null>
+    findtask(projectId:String,title:String):Promise<Task | null>
+    createTask(task:Task):Promise<Task | null>
 }
