@@ -9,8 +9,10 @@ import { createorg } from "./src/Domain/usecase/CreateOrg.js"
 import { createproject } from "./src/Domain/usecase/CreateProject.js";
 import { createapplication } from "./src/Domain/usecase/CreateApplication.js";
 import { checkApplication } from "./src/Domain/usecase/CheckApplication.js";
-import {getapplication} from "./src/Domain/usecase/GetApplicationForOrganization.js"
+import { getapplication } from "./src/Domain/usecase/GetApplicationForOrganization.js"
 import Jwt from "jsonwebtoken";
+import { createtask } from "./src/Domain/usecase/CreateTask.js";
+import { checktask } from "./src/Domain/usecase/CheckTask.js";
 
 dotenv.config();
 
@@ -135,13 +137,13 @@ app.post("/organizatoin/apply", async (req: Request, res: Response) => {
   }
 })
 
-app.post("/organization/get-applications",async(req:Request,res:Response)=>{
-  const {orgid} = req.body;
+app.post("/organization/get-applications", async (req: Request, res: Response) => {
+  const { orgid } = req.body;
   const result = await getapplication.execute({
     orgid
   })
   return res.status(201).json({
-    results:result
+    results: result
   })
 })
 
@@ -161,6 +163,47 @@ app.post("/create-project", async (req: Request, res: Response) => {
     }
 
     return res.status(201).json(projectResult);
+
+  } catch (err) {
+    console.log(err);
+
+    return res.status(500).json({
+      message: "Internal server error"
+    });
+  }
+});
+
+app.post("/create-task", async (req: Request, res: Response) => {
+  try {
+    const { title, projectId, orgId, due } = req.body;
+
+    const check = await checktask.execute({
+      projectId,
+      title
+    })
+
+    if (check.status == false) {
+      return res.status(400).json({
+        status: false,
+        message: "Task already exists"
+      })
+    }
+
+    else {
+      const taskResult = await createtask.execute({
+        title,
+        projectId,
+        orgId,
+        due
+      })
+
+      if (!taskResult.status) {
+        return res.status(409).json(taskResult);
+      }
+
+      return res.status(201).json(taskResult);
+    }
+
 
   } catch (err) {
     console.log(err);
