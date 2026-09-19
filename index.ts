@@ -13,6 +13,10 @@ import { getapplication } from "./src/Domain/usecase/GetApplicationForOrganizati
 import Jwt from "jsonwebtoken";
 import { createtask } from "./src/Domain/usecase/CreateTask.js";
 import { checktask } from "./src/Domain/usecase/CheckTask.js";
+import { getproject } from "./src/Domain/usecase/AddMembersToProject.js"
+import {gettask} from "./src/Domain/usecase/AddMmebersToTask.js"
+import { deletetask } from "./src/Domain/usecase/DeleteMemberFromTask.js";
+import { deleteproject } from "./src/Domain/usecase/DeleteMemberFromProject.js";
 
 dotenv.config();
 
@@ -48,13 +52,12 @@ app.post("/login-user", async (req: Request, res: Response) => {
       email,
       password
     )
-    console.log(result)
     if (!result.status || !result.user) {
       return res.status(401).json(result);
     }
     const jwttoken = Jwt.sign(
       {
-        orgId: id,
+        userId: id,
       },
       key
     )
@@ -213,6 +216,70 @@ app.post("/create-task", async (req: Request, res: Response) => {
     });
   }
 });
+
+app.post("/addmembers-toproject", async (req: Request, res: Response) => {
+  try {
+    const { id,members } = req.body
+
+    const resutl = await getproject.execute(id,members)
+    console.log(resutl);
+    
+
+    if(resutl.success === false || null ){
+      return res.json({message:"there was a problem adding the member"})
+    }
+    else{
+      return res.json({message:"members added successfully"})
+    }
+
+  } catch (err) {
+    console.log(err)
+  }
+}) 
+
+app.post("/addmembers-totask",async(req:Request,res:Response)=>{
+  try{
+    const {taskid,members} = req.body
+    const result = await gettask.execute(
+      taskid,members
+    )
+    if(result.success == false || null){
+      return res.json({message:"there was a problem adding the member"})
+    }
+    else{
+      return res.json({message:"members added successfully"})
+    }
+  }catch(err){
+    console.log(err)
+  }
+}) 
+
+app.post("/deletemember-from-task",async(req:Request,res:Response)=>{
+  const {taskid,userid} = req.body
+
+  const result = await deletetask.execute(taskid,userid)
+  if(result.success == false || null){
+    return res.json({message:"problem removing members or no such task is there"})
+  }
+  else{
+      return res.json({message:"removed the members"})
+  }
+})
+
+app.post("/deletemembers-fromproject",async(req:Request,res:Response)=>{
+  try{
+    const {projectid,userid} = req.body
+
+    const result = await deleteproject.execute(projectid,userid)
+    console.log(result)
+    if(result.success == false || null){
+      return res.json({message:"problem removing member or such project or user does not exists"})
+    }
+    else{
+      res.json({message:"remove the user from project"})
+    }
+  }catch(err){console.log(err)}
+})
 
 
 app.listen(PORT, () => {
