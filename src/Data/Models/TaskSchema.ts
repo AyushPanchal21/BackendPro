@@ -45,11 +45,6 @@ const taskSchema = new Schema<Task>(
                     ref: "User",
                     required: true,
                 },
-
-                role: {
-                    type: String,
-                    required: true,
-                },
             },
         ],
 
