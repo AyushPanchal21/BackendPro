@@ -16,13 +16,25 @@ const projectSchema = new Schema<Project>({
         type: String,
     },
     allMem: [
-        {
-            userId: {
-                type: Schema.Types.ObjectId,
-                ref: "User"
-            }
-        }
-    ],
+    {
+        userId: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+        },
+        name: {
+            type: String,
+        },
+        email: {
+            type: String,
+        },
+        role: {
+            type: String,
+        },
+        createdAt: {
+            type: Date,
+        },
+    }
+],
     createdAt: {
         type: Date,
         default: Date.now,
