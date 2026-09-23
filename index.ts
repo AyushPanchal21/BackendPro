@@ -1,7 +1,6 @@
 import express from "express";
 import type { Request, Response } from "express";
 import { DBConnect } from './src/service/DataBaseConnection.js'
-import dotenv from "dotenv";
 import { createUser } from "./src/Domain/usecase/CreateUser.js";
 import { loginUser } from "./src/Domain/usecase/LoginUser.js";
 import { loginOrg } from "./src/Domain/usecase/LoginOrg.js";
@@ -17,6 +16,9 @@ import { getproject } from "./src/Domain/usecase/AddMembersToProject.js"
 import {gettask} from "./src/Domain/usecase/AddMmebersToTask.js"
 import { deletetask } from "./src/Domain/usecase/DeleteMemberFromTask.js";
 import { deleteproject } from "./src/Domain/usecase/DeleteMemberFromProject.js";
+import { OrgAuth } from "./src/Presentation/Middleware/OrgAuthMiddleWare.js";
+import dotenv from "dotenv";
+
 
 dotenv.config();
 
@@ -47,7 +49,7 @@ app.post("/create-user", async (req: Request, res: Response) => {
 
 app.post("/login-user", async (req: Request, res: Response) => {
   try {
-    const { email, password, id } = req.body
+    const { email, password} = req.body
     const result = await loginUser.execute(
       email,
       password
@@ -57,7 +59,7 @@ app.post("/login-user", async (req: Request, res: Response) => {
     }
     const jwttoken = Jwt.sign(
       {
-        userId: id,
+        userId: result.user,
       },
       key
     )
@@ -115,30 +117,40 @@ app.post("/login-organization", async (req: Request, res: Response) => {
   }
 })
 
-app.post("/organizatoin/apply", async (req: Request, res: Response) => {
+app.post("/organizatoin/apply", OrgAuth, async (req: Request, res: Response) => {
 
-  const { orgid, userid, role, experience } = req.body
+    const { orgid, role, experience } = req.body;
 
-  const check = await checkApplication.execute({
-    userid,
-    orgid
-  })
-  if (check.status == false) {
-    return res.status(400).json({
-      status: false,
-      message: "User has already applied"
-    })
-  }
-  else {
+    if (!req.user) {
+        return res.status(401).json({
+            status: false,
+            message: "Unauthorized"
+        });
+    }
+
+    const userid = req.user.userId;
+
+    const check = await checkApplication.execute({
+        userid,
+        orgid
+    });
+
+    if (check.status === false) {
+        return res.status(400).json({
+            status: false,
+            message: "User has already applied"
+        });
+    }
+
     const result = await createapplication.execute({
-      orgid,
-      userid,
-      role,
-      experience
-    })
+        orgid,
+        userid,
+        role,
+        experience
+    });
+
     return res.status(201).json(result);
-  }
-})
+});
 
 app.post("/organization/get-applications", async (req: Request, res: Response) => {
   const { orgid } = req.body;
