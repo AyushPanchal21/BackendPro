@@ -23,6 +23,7 @@ export class CreateOrg {
                 password: hash,
                 email : org.email,
                 orgName:org.orgName,
+                orgOwner:true,
                 project:[],
                 allMem:[],
                 createdAt: new Date(),

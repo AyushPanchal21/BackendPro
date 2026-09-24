@@ -4,13 +4,11 @@ import jwt from "jsonwebtoken";
 interface OrgJwtPayload {
     userId: string;
     orgId?: string;
-    orgOwner?: boolean;
 }
 
-const JWTKEY = process.env.SECRETKEY || ""
-
-export const OrgAuth = (req: Request, res: Response, next: NextFunction)=>{
+export const TokenCheckWare = (req: Request, res: Response, next: NextFunction) => {
     try {
+        const JWTKEY = process.env.SECRETKEY || ""
         const authHeader = req.headers.authorization;
 
         if (!authHeader) {
@@ -27,17 +25,14 @@ export const OrgAuth = (req: Request, res: Response, next: NextFunction)=>{
             });
         }
 
-         const decoded = jwt.verify(
-            token,
-            JWTKEY
-        ) as OrgJwtPayload;
-
+        const decoded = jwt.verify(token, JWTKEY) as OrgJwtPayload;
 
         req.user = decoded;
 
         next();
 
     } catch (error) {
+        console.log(error);
         return res.status(401).json({
             message: "Invalid or expired token"
         });

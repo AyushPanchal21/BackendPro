@@ -10,4 +10,7 @@ export class MongoOrgRepo implements OrganizationRepository{
         const newOrg = new OrganizationModel(org)
         return await newOrg.save()
     }
+    async findById(id: string): Promise<Organization | null> {
+            return await OrganizationModel.findById(id);
+        }
 }

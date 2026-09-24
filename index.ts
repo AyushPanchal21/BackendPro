@@ -16,7 +16,8 @@ import { getproject } from "./src/Domain/usecase/AddMembersToProject.js"
 import {gettask} from "./src/Domain/usecase/AddMmebersToTask.js"
 import { deletetask } from "./src/Domain/usecase/DeleteMemberFromTask.js";
 import { deleteproject } from "./src/Domain/usecase/DeleteMemberFromProject.js";
-import { OrgAuth } from "./src/Presentation/Middleware/OrgAuthMiddleWare.js";
+import { TokenCheckWare } from "./src/Presentation/Middleware/MiddleWare.js";
+import {OrgOwnerCheck} from "./src/Presentation/Middleware/OrgMiddleWare.js"
 import dotenv from "dotenv";
 
 
@@ -117,7 +118,7 @@ app.post("/login-organization", async (req: Request, res: Response) => {
   }
 })
 
-app.post("/organizatoin/apply", OrgAuth, async (req: Request, res: Response) => {
+app.post("/organizatoin/apply", TokenCheckWare, async (req: Request, res: Response) => {
 
     const { orgid, role, experience } = req.body;
 
@@ -152,7 +153,7 @@ app.post("/organizatoin/apply", OrgAuth, async (req: Request, res: Response) => 
     return res.status(201).json(result);
 });
 
-app.post("/organization/get-applications", async (req: Request, res: Response) => {
+app.post("/organization/get-applications",TokenCheckWare,OrgOwnerCheck,async (req: Request, res: Response) => {
   const { orgid } = req.body;
   const result = await getapplication.execute({
     orgid
@@ -162,7 +163,7 @@ app.post("/organization/get-applications", async (req: Request, res: Response) =
   })
 })
 
-app.post("/create-project", async (req: Request, res: Response) => {
+app.post("/create-project", TokenCheckWare,OrgOwnerCheck,async (req: Request, res: Response) => {
   try {
     const { orgid, proName, description, allMem = [] } = req.body;
 
@@ -188,7 +189,7 @@ app.post("/create-project", async (req: Request, res: Response) => {
   }
 });
 
-app.post("/create-task", async (req: Request, res: Response) => {
+app.post("/create-task", TokenCheckWare,OrgOwnerCheck,async (req: Request, res: Response) => {
   try {
     const { title, projectId, orgId, due } = req.body;
 
@@ -229,7 +230,9 @@ app.post("/create-task", async (req: Request, res: Response) => {
   }
 });
 
-app.post("/addmembers-toproject", async (req: Request, res: Response) => {
+// add members to org
+
+app.post("/addmembers-toproject",TokenCheckWare,OrgOwnerCheck,async (req: Request, res: Response) => {
   try {
     const { id,members } = req.body
 
@@ -249,7 +252,7 @@ app.post("/addmembers-toproject", async (req: Request, res: Response) => {
   }
 }) 
 
-app.post("/addmembers-totask",async(req:Request,res:Response)=>{
+app.post("/addmembers-totask",TokenCheckWare,OrgOwnerCheck,async(req:Request,res:Response)=>{
   try{
     const {taskid,members} = req.body
     const result = await gettask.execute(
@@ -266,7 +269,7 @@ app.post("/addmembers-totask",async(req:Request,res:Response)=>{
   }
 }) 
 
-app.post("/deletemember-from-task",async(req:Request,res:Response)=>{
+app.post("/deletemember-from-task",TokenCheckWare,OrgOwnerCheck,async(req:Request,res:Response)=>{
   const {taskid,userid} = req.body
 
   const result = await deletetask.execute(taskid,userid)
@@ -278,7 +281,7 @@ app.post("/deletemember-from-task",async(req:Request,res:Response)=>{
   }
 })
 
-app.post("/deletemembers-fromproject",async(req:Request,res:Response)=>{
+app.post("/deletemembers-fromproject",TokenCheckWare,OrgOwnerCheck,async(req:Request,res:Response)=>{
   try{
     const {projectid,userid} = req.body
 

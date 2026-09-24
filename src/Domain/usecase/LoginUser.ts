@@ -17,6 +17,8 @@ export class LoginUser{
         }
         else{
             const hash = user.password;
+            console.log(hash);
+            console.log(password);
             const ismatch = await bcrypt.compare(password, hash);
             if(!ismatch){
                 return{

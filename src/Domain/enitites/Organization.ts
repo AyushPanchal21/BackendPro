@@ -14,6 +14,7 @@ export interface Organization {
     password:string,
     email:string,
     orgName: string,
+    orgOwner:Boolean,
     project: ProjectList[],
     allMem: OrganizationMembers[],
     createdAt: Date,
